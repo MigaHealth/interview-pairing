@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  app:
+    image: local-workspace/app
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - NODE_VERSION=18.16.0
+        - ALPINE_VERSION=3.17
+        - PORT=3000
+    ports:
+      - ${APP_PORT}:3000
+    volumes:
+      - .:/app/dev
+      - /app/dev/node_modules/
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14-alpine
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - ${DB_PORT}:5432
+    volumes:
+      - data:/var/lib/postgresql/data
+
+volumes:
+  data:
+    driver: local
