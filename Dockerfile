@@ -1,6 +1,5 @@
 ARG NODE_VERSION
 ARG ALPINE_VERSION
-ARG DOCKER_ENV
 
 
 # Common env setup
@@ -27,15 +26,15 @@ COPY yarn.lock .
 ## Install dependencies
 RUN yarn install
 
-## Copy workspace
+## Generate prisma client
 COPY .env .
-COPY src/ src/
 COPY prisma/ prisma/
+RUN yarn prisma generate
+
+## Copy workspace
+COPY src/ src/
 COPY next.config.js .
 COPY tsconfig.json .
-
-# ## Generate prisma client
-RUN yarn prisma generate
 
 
 # Dev image
@@ -43,5 +42,6 @@ FROM base AS dev
 
 ENV NODE_ENV development
 ENV NEXT_TELEMETRY_DISABLED 1
+ENV DB_PORT 5432
 EXPOSE $PORT
 CMD ["yarn", "next", "dev"]

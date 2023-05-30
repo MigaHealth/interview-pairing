@@ -10,9 +10,8 @@ services:
         - NODE_VERSION=18.16.0
         - ALPINE_VERSION=3.17
         - PORT=3000
-        - DOCKER_ENV=local
     ports:
-      - 3000:3000
+      - ${APP_PORT}:3000
     volumes:
       - .:/app/dev
       - /app/dev/node_modules/
