@@ -1,10 +1,10 @@
 import type { NextPage } from 'next';
-import type { AppType, AppProps } from 'next/app';
+import type { AppProps } from 'next/app';
 import type { ReactElement, ReactNode } from 'react';
 
-import { DefaultLayout } from '~/components/DefaultLayout';
 import { trpc } from '~/utils/trpc';
-import '~/styles/globals.css';
+import { MantineProvider } from '@mantine/core';
+import { Layout } from '~/components/Layout';
 
 export type NextPageWithLayout<
   TProps = Record<string, unknown>,
@@ -17,11 +17,31 @@ type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
 
-const MyApp = (({ Component, pageProps }: AppPropsWithLayout) => {
-  const getLayout =
-    Component.getLayout ?? ((page) => <DefaultLayout>{page}</DefaultLayout>);
+const App = ({ Component, pageProps }: AppPropsWithLayout) => {
+  return (
+    <MantineProvider
+      withGlobalStyles
+      withNormalizeCSS
+      theme={{
+        components: {
+          Button: {
+            styles: (theme) => ({
+              root: {
+                backgroundColor: theme.colors.dark[9],
+                '&:hover': {
+                  backgroundColor: theme.colors.gray[4],
+                },
+              },
+            }),
+          },
+        },
+      }}
+    >
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+    </MantineProvider>
+  );
+};
 
-  return getLayout(<Component {...pageProps} />);
-}) as AppType;
-
-export default trpc.withTRPC(MyApp);
+export default trpc.withTRPC(App);
